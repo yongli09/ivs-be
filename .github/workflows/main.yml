@@ -16,29 +16,15 @@ jobs:
 
     - name: Checkout master
       uses: actions/checkout@master
-
-    - name: Update SHA
-      run: echo $GITHUB_SHA > $GITHUB_WORKSPACE/_meta
     
-    - name: Set AWS AWS_ACCESS_KEY_ID ID
-      run : export AWS_ACCESS_KEY_ID=AKIAWORGYLDCBV3MZXIQ
-
-    - name: Set AWS REGION
-      run : export AWS_DEFAULT_REGION=ap-southeast-1
-      
-    - name: Set AWS AWS_SECRET_ACCESS_KEY
-      run : export AWS_SECRET_ACCESS_KEY=nBs79aF4q7YgtVUZT0fCFUKQlkkpy8Xc/qxBwkqL
-  
-    - name: Login to AWS
-      run : aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 939397639601.dkr.ecr.ap-southeast-1.amazonaws.com
-
-    - name: Build container image
-      run : docker build -t 939397639601.dkr.ecr.ap-southeast-1.amazonaws.com/ivs-be:latest .
-  
-    - name: Push to AWS ECR registry
-      run : docker push 939397639601.dkr.ecr.ap-southeast-1.amazonaws.com/ivs-be:latest
-            
-    - name: Restarting ECS
-      run : ./restart.sh 
+    - name: Build and Update ECS
+      run : | 
+        export AWS_ACCESS_KEY_ID=AKIAWORGYLDCBV3MZXIQ
+        export AWS_DEFAULT_REGION=ap-southeast-1
+        export AWS_SECRET_ACCESS_KEY=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
+        aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 939397639601.dkr.ecr.ap-southeast-1.amazonaws.com
+        docker build -t 939397639601.dkr.ecr.ap-southeast-1.amazonaws.com/ivs-be:latest .
+        docker push 939397639601.dkr.ecr.ap-southeast-1.amazonaws.com/ivs-be:latest
+        ./restart.sh 
 
 
